@@ -32,7 +32,7 @@ ALT+F7:
 
 
 Ctrl+Shift+F7 (Edit | Find | Highlight Usages in File) 
-   高粱 当前变量名
+   高亮 当前变量名
 F3 and Shift+F3：
    可以调到前面或后面的高亮的变量
 

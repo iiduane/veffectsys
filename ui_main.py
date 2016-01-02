@@ -6,6 +6,9 @@
 ## 此处如果使用 import Tkinter 会有一些参数 不识别
 from Tkinter import *
 
+
+
+
 rootui = Tk()
 
 li =['c', 'python', 'php', 'html' , 'sql']
