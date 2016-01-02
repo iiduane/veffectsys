@@ -1,0 +1,16 @@
+
+
+
+相关git命令：
+
+
+push到远程仓库：
+git add .
+git commit -m "xx"
+git push origin master    # 执行后提示输入用户名密码
+
+第一次推送的时候要添加远程的代码库到配置
+
+git remote add origin master https://github.com/zhong635725959/droplook.git
+
+
