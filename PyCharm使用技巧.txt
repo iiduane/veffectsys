@@ -1,0 +1,67 @@
+
+
+CTRL+N:
+弹出查询类名的搜索框，可以搜索类名
+
+CTRL+空格：
+补全方法名变量等 ，
+
+实现补全用tab，可以替换一个变量或一个方法名
+
+ALT+F7:
+
+##Ctrl+Q:
+ (View | Quick Documentation).
+
+ 
+##Ctrl+B:
+先选中，在通过这个快捷键弹出对应的方法定义， 在方法定义的小窗按住 ctrl键单击鼠标，可以调到定义位置。
+
+##Ctrl+F12:
+调到当前类的定义，显示这个类的成员
+ (Navigate | File Structure).
+
+##Shift+F6:
+ 弹出建议命名
+ 
+##Ctrl+D:
+  克隆当前行
+
+##Ctrl+P:
+  当光标在函数括号内的时候，这个快捷键调出这个函数可用的参数吗
+
+
+Ctrl+Shift+F7 (Edit | Find | Highlight Usages in File) 
+   高粱 当前变量名
+F3 and Shift+F3：
+   可以调到前面或后面的高亮的变量
+
+Esc 退出高亮的变量
+
+Ctrl+E (View | Recent Files)
+    查看最近打开过的文件
+	
+	
+Alt+向上箭头 and Alt+向下箭头:
+   在方法间移动
+   
+Ctrl+Shift+V:
+  选择最近复制过的 内容粘贴
+
+Alt+Shift+C 查看最近的操作.
+ 
+##press Alt+F1.：
+ To quickly select the currently edited element (class, file, method or field) in any view (Project view, Structure view or other), 
+
+Esc：
+ key in any tool window moves the focus to the editor.
+Shift+Esc：
+ moves the focus to the editor and also hides the current (or last active) tool window.
+F12：
+ key moves the focus from the editor to the last focused tool window
+
+ 
+Ctrl+Shift+Backspace (Navigate | Last Edit Location) brings you back to the last place where you made changes in the code.
+Pressing Ctrl+Shift+Backspace a few times moves you deeper into your changes history.
+
+补全
