@@ -30,6 +30,35 @@ frm_large = Frame(rootui)
 # for menu place
 frm_menu = Frame(frm_large, width= 800 , bg='yellow')
 frm_menu.pack(side=TOP, expand =YES, fill= X)
+frm_menu.pack_propagate(0)  ## 使得 frame 不随 内部控件大小而变化
+
+
+def menu_of_open():
+	print 'Open file'
+
+def menu_of_edit():
+	print 'Open edit'
+
+def menu_of_set():
+	print 'Open set'
+
+def menu_of_help():
+	print 'Open help'
+# create menu
+# menu_dict = { '打开':menu_of_open, '编辑':menu_of_edit, '设置': menu_of_set, '帮助':menu_of_help}
+
+menuname_list = ['打开','编辑','设置','帮助']
+menufunc_list = [menu_of_open, menu_of_edit, menu_of_set, menu_of_help]
+
+menu_bar = Menu(frm_menu)
+## for ikey, ivalue in menu_dict.items():
+for ikey, ivalue in zip(menuname_list, menufunc_list):
+	print 'ikey: ' + ikey + '  ivalue: ' + str(ivalue)
+	menu_bar.add_command(label = ikey, command = ivalue)
+
+rootui['menu'] = menu_bar
+
+
 #for tool box place
 frm_tool = Frame(frm_large)
 frm_tool.pack(side=TOP, expand =YES, fill= X)
@@ -56,8 +85,8 @@ leftsel_lb.pack(side=LEFT, expand= YES, fill = Y)
 
 frm_mright =Frame(frm_middle)
 # define mright x size
-mright_xsize = 128
-listb = Listbox(frm_mright, height= middle_ysize, width = 40)
+mright_xsize = 148
+listb = Listbox(frm_mright, height= middle_ysize, width = 20)
 for item in li:
 	listb.insert(0, item)
 listb.pack(side=LEFT, expand = NO, fill = Y)
@@ -66,8 +95,9 @@ listb.pack(side=LEFT, expand = NO, fill = Y)
 # frm_right_text.pack(side= TOP)
 showtexts = ['one text show', 'two text show', 'three text show', 'four text show']
 for showtext in showtexts:
-	showtw = Text(frm_mright, height=1,  width = mright_xsize)
+	showtw = Text(frm_mright, height=10,  width = mright_xsize)
 	showtw.insert(1.0, showtext)
+	showtw['state'] = 'disabled'
 	showtw.pack()
 
 frm_mright.pack(side=LEFT, expand=YES, fill =Y)

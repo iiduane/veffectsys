@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure_parse type="log_keyword">
+
+<logparse_set name="pc1" >
+<keyword>PC is at</keyword>
+<type>kernel_panic</type>
+<!---- priority :  0 > 1 > 2 >3 > 4 ... ---->
+<priority enable="true">1</priority>
+<wholeword>true</wholeword>
+<casesense>true</casesense>
+<line_before enable="true">2</line_before>
+<line_before_keyword enable="false"></line_before_keyword>
+<line_after enable="true">6</line_after>
+<line_after_keyword enable="false"></line_after_keyword>
+<!---- related_name : 关联的关键词， 比如可以关联 modemrst1  ... ---->
+<related_name enable="false"> </related_name>
+<description>Location the "PC is at", and find panic! </description>
+</logparse_set>
+
+
+<logparse_set name="modemrst1" >
+<keyword>SMSM_RESET</keyword>
+<type>modem_reset</type>
+<!---- priority :  0 > 1 > 2 >3 > 4 ... ---->
+<priority enable="true">1</priority>
+<wholeword>true</wholeword>
+<casesense>true</casesense>
+<line_before enable="true">2</line_before>
+<line_before_keyword enable="false"></line_before_keyword>
+<line_after enable="true">6</line_after>
+<line_after_keyword enable="false"></line_after_keyword>
+<!---- related_name : 关联的关键词， 比如可以关联 pc2  ... ---->
+<related_name enable="false"> </related_name>
+<description>Location the "SMSM_RESET", and find modem reset! </description>
+</logparse_set>
+
+
+</configure_parse>
+
+
+
