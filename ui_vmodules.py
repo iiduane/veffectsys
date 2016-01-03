@@ -8,9 +8,10 @@ from Tkinter import *
 
 
 
+
 def vframe(root, side):
 	w = Frame(root)
-	w.pack(side=side, expand=YES, fill=BOTH)
+	w.pack(side=side,expand=YES, fill=BOTH)
 	return w
 
 def vbutton(root, side, text, command=None):
@@ -30,6 +31,7 @@ frame_hourglass = vframe(frame1, side=LEFT)
 
 frame2 = Frame(xroot)
 frame_info = vframe(frame1, side=LEFT)
+frame_info.configure(bg='green', bd=40)
 frame_question = vframe(frame1, side=LEFT)
 
 
@@ -66,6 +68,7 @@ xlable =Label(frame_warning, bitmap='warning')
 xlable.pack()
 Checkbutton(frame_warning, text='set warning').pack()
 xlable =Label(frame_gray75, text='gray75:')
+xlable['background']='red'
 xlable.pack()
 xlable =Label(frame_gray75, bitmap='gray75')
 xlable.pack()
