@@ -3,10 +3,118 @@
 # -*- coding: cp936 -*-
 # for ui start
 
+import os
 ## 此处如果使用 import Tkinter 会有一些参数 不识别
 from Tkinter import *
+#from xml.dom.minidom import *
+import xml.dom.minidom
 
 
+
+####　class of xml parse   ############
+
+## class logxmlparse(xml.sax.ContentHandler):
+
+file_url = "F:/CreativePrj/python_prj/veffectsys/ext_keywords_config/main_parse.xml"
+
+class logparse():
+
+	def __init__(self):
+		logparse_name = ""
+		keyword = ""
+		keyword_and = ""
+		type = ""
+		priority = ""
+		wholeword = ""
+		casesense = ""
+		line_before = "0"
+		line_before_keyword = ""
+		line_after = "0"
+		line_after_keyword = ""
+		related_name = ""
+		description = " This is init in class logparse!!"
+		print "init completed."
+	logparse_name = ""
+	keyword = ""
+	keyword_and = ""
+	type = ""
+	priority = ""
+	wholeword = ""
+	casesense = ""
+	line_before = ""
+	line_before_keyword = ""
+	line_after = ""
+	line_after_keyword = ""
+	related_name = ""
+	description = ""
+
+	def print_all(self):
+		print "\n**** logparse print all ****"
+		print "logparse_name = %s; keyword = %s;  keyword_and=%s; type = %s;"  % (self.logparse_name, self.keyword, self.keyword_and, self.type)
+		print "priority = [%s]  wholeword = [%s]  casesense = [%s]" % (self.priority, self.wholeword, self.casesense)
+		print "line_before = [%s]  line_before_keyword = [%s]  line_after = [%s]" % (self.line_before, self.line_before_keyword, self.line_after)
+		print "line_after_keyword = [%s] related_name = [%s]  description = [%s] " % (self.line_after_keyword, self.related_name, self.description)
+		print "******** end of log print all ******\n"
+
+	def tagvalues(self):
+		tag_list = [self.logparse_name, self.keyword, self.keyword_and, self.type, \
+self.priority, self.wholeword, self.casesense, \
+self.line_before, self.line_before_keyword, self.line_after, \
+self.line_after_keyword, self.related_name, self.description ]
+		return tag_list  ## return a list contain self. xxx .
+
+
+if os.path.exists(file_url):
+	print "file exits url : %s" % file_url
+	try:
+		print "start to parse xml"
+		xml_domtree = xml.dom.minidom.parse(file_url)
+	except Exception, e:
+		print "xml file is not a goot xml!"
+
+else:
+	print "file is not exits url: %s" % file_url
+
+
+xmlnode = xml_domtree.documentElement
+
+if xmlnode.hasAttribute("title"):
+	keywords_title = xmlnode.getAttribute("title")
+	print "Root element: %s" % keywords_title
+
+subnodes = xmlnode.getElementsByTagName("logparse_set")
+
+cntsub = 0
+xmlnode_logparse_list = []
+for subnode in subnodes:
+	print "***** sub [%d]  ****** " % cntsub
+	xlogparse = logparse()
+	if subnode.hasAttribute("name"):
+		xlogparse.logparse_name = subnode.getAttribute("name")
+	xlogparse.keyword = subnode.getElementsByTagName('keyword')[0].childNodes[0].data
+	xlogparse.type = subnode.getElementsByTagName('type')[0].childNodes[0].data
+	xlogparse.priority = subnode.getElementsByTagName('priority')[0].childNodes[0].data
+	xlogparse.wholeword = subnode.getElementsByTagName('wholeword')[0].childNodes[0].data
+	xlogparse.casesense = subnode.getElementsByTagName('casesense')[0].childNodes[0].data
+	xlogparse.line_before = subnode.getElementsByTagName('line_before')[0].childNodes[0].data
+	xlogparse.line_before_keyword = subnode.getElementsByTagName('line_before_keyword')[0].childNodes[0].data
+	xlogparse.line_after = subnode.getElementsByTagName('line_after')[0].childNodes[0].data
+	xlogparse.line_after_keyword = subnode.getElementsByTagName('line_after_keyword')[0].childNodes[0].data
+	xlogparse.related_name = subnode.getElementsByTagName('related_name')[0].childNodes[0].data
+	xlogparse.description = subnode.getElementsByTagName('description')[0].childNodes[0].data
+	xlogparse.print_all()
+	xmlnode_logparse_list.append(xlogparse)
+	print "append xlogparse[%d] \n\n" % cntsub
+	cntsub += 1
+
+
+####  end of xml parse   #########
+
+
+#### search keys  ####
+
+
+####  end search keys ####
 
 
 rootui = Tk()
@@ -86,6 +194,10 @@ leftsel_lb.pack(side=LEFT, expand= YES, fill = Y)
 frm_mright =Frame(frm_middle)
 # define mright x size
 mright_xsize = 148
+
+# anchor   justfy 的含义还不明确
+keywords_titlelb = Label(frm_mright, text="KeyWords Title:  " + keywords_title, bg="green", font=("Arial", 12), height= 1, anchor='w', justify="left" )
+keywords_titlelb.pack(side =TOP)
 listb = Listbox(frm_mright, height= middle_ysize, width = 20)
 for item in li:
 	listb.insert(0, item)
@@ -97,7 +209,7 @@ showtexts = ['one text show', 'two text show', 'three text show', 'four text sho
 for showtext in showtexts:
 	showtw = Text(frm_mright, height=10,  width = mright_xsize)
 	showtw.insert(1.0, showtext)
-	showtw['state'] = 'disabled'
+	showtw['state'] = 'disabled'  ## 设置 text 只读状态
 	showtw.pack()
 
 frm_mright.pack(side=LEFT, expand=YES, fill =Y)
