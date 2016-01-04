@@ -293,7 +293,7 @@ cmd_left_lb.pack(side=LEFT)
 #### ###################################################
 
 
-def searchkey(fileurl, mode, logparse, fileout='F:/report.temp.txt', outmode='a+'):
+def searchkey(fileurl, mode, logparse, fileout='F:/templog/report.temp.txt', outmode='a+'):
 	filefp = open(file_url, mode)
 	fileoutfp = open(fileout, outmode)
 
@@ -329,8 +329,9 @@ def searchkey(fileurl, mode, logparse, fileout='F:/report.temp.txt', outmode='a+
 		keylcnt = 0
 		for item in keylines:
 			keylcnt +=1
-			keylinesprint += "cnt:%d,\n fileurl:%s, \n  lineContent:%s\n\n\n\n" % (keylcnt,file_url, item)
-		allprint = "keyword: %s, keywordand:%s, keycnt:%d, \nkeylinesfull: %s" % (logparse.keyword, logparse.keyword_and, keycnt, keylinesprint)
+			keylinesprint += "-[cnt]:  %d,  -[fileurl]:  %s, \n-[lineContent]:\n    %s" % (keylcnt,file_url, item)
+		allprint = "[keyword]: %s ; [keywordand]:%s ; [keycnt]:%d ;\n[keylinesfull]:\n %s\n*****************\n\n\n" % \
+				   (logparse.keyword, logparse.keyword_and, keycnt, keylinesprint)
 		fileoutfp.writelines(allprint)
 		fileoutfp.flush()
 		return logparse.keyword, logparse.keyword_and, keycnt, keylines
@@ -344,8 +345,10 @@ def enter_hander_for_entry(event):
 	## str_input = command_lb.get()
 	str_input.set(command_lb.get())
 	print "bind hander after set : " +  str_input.get()
+	# 从输入框获取 目录路径
+	allthe_filelist = find_file_by_pattern(".log", str_input.get())
 	result_list = []
-	for item in file_list:
+	for item in allthe_filelist:
 		result_list.append(searchkey(item, 'r', xlogparse))
 
 	for item2 in result_list:
