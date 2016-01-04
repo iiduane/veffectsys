@@ -10,6 +10,24 @@ from Tkinter import *
 import xml.dom.minidom
 
 
+#######   import support of tkdnd    ##############
+
+
+#获取脚本文件的当前路径
+curr_path = os.getcwd()
+print "curr_path: " + curr_path
+print "*******  >>>>  sys.executable:  " + sys.executable + "  sys.platform: " + sys.platform
+if sys.platform == 'win32' or sys.platform == 'win64':
+	print "get tkdnd library dir: "
+	os.environ['TKDND_LIBRARY'] = os.path.join(curr_path, 'support_lib/tkdnd2.8')
+
+
+#from vtkdnd import TkDND
+from vtkdnd import *
+
+######  end of tkdnd  #######################
+
+
 
 ####　class of xml parse   ############
 
@@ -250,16 +268,65 @@ frm_middle.pack()
 # define command frame and input entry
 frm_command = Frame(frm_large, bg='red')
 frm_command.pack()  ##  如果要独占一行 就不要使用 side expand fill 这些参数指定值
-command_lb = Entry(frm_command, text="Text command", bg="orange", font=("Arial", 12), width= large_xsize)
-command_lb.pack( expand= YES, fill = X)
 
-print "*******  >>>>  sys.executable:  " + sys.executable + "  sys.platform: " + sys.platform
-if sys.platform == 'win32' or sys.platform == 'win64':
-	print "get tkdnd library dir: "
-	os.environ['TKDND_LIBRARY'] = os.path.join(os.path.dirname(sys.executable), 'tkdnd2.7')
+cmd_left_lb = Label(frm_command,text ='Command')
+cmd_left_lb.pack(side=LEFT)
 
-print "os.getcwd() : " + os.getcwd()
-##dnd = TkDND(frm_command)
+def enter_hander_for_entry(event):
+	print "bind hander str: " +  str_input.get()
+	## str_input = command_lb.get()
+	str_input.set(command_lb.get())
+	print "bind hander after set : " +  str_input.get()
+
+str_input = StringVar()
+input_dnd = TkDND(frm_command)
+command_lb = Entry(frm_command, textvariable = str_input, text="Text command", font=("Arial", 12), width= large_xsize-20)
+str_input.set('Please input log url ,or drag and drop a directory containing log')
+print "str input ********************"
+print str_input.get()
+# response for enter key.
+command_lb.bind('<Return>', enter_hander_for_entry	)
+
+command_lb.pack(side=LEFT, expand= YES, fill = X)
+
+## support drag in commandlb entry.
+def drag_handle(event):
+	event.widget.insert(0, event.data)
+
+input_dnd.bindtarget(command_lb, drag_handle, 'text/uri-list')
+
+
+
+def func_enter_text():
+	print "enter str: " +  str_input.get()
+	## str_input = command_lb.get()
+	str_input.set(command_lb.get())
+	print "enter str after set : " +  str_input.get()
+
+
+def func_clear_text():
+	command_lb.delete(0, END)
+	str_input.set("")
+
+def func_get_text():
+	lbstr = command_lb.get()
+	print "lbstr: " + lbstr
+
+enter_btn = Button(frm_command, text= "Enter", command = func_enter_text)
+enter_btn.pack(side=LEFT)
+clear_btn = Button(frm_command, text= "Clear", command = func_clear_text)
+clear_btn.pack(side=LEFT)
+get_btn = Button(frm_command, text= "Get", command = func_get_text)
+get_btn.pack(side=LEFT)
+
+
+#print "*******  >>>>  sys.executable:  " + sys.executable + "  sys.platform: " + sys.platform
+#if sys.platform == 'win32' or sys.platform == 'win64':
+#	print "get tkdnd library dir: "
+#	os.environ['TKDND_LIBRARY'] = os.path.join(os.path.dirname(sys.executable), 'tkdnd2.7')
+#
+#print "os.getcwd() : " + os.getcwd()
+###dnd = TkDND(frm_command)
 
 #define  statusbar frame
 frm_statusbar = Frame(frm_large, bg= 'grey')
