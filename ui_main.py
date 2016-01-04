@@ -253,6 +253,15 @@ frm_command.pack()  ##  如果要独占一行 就不要使用 side expand fill �
 command_lb = Entry(frm_command, text="Text command", bg="orange", font=("Arial", 12), width= large_xsize)
 command_lb.pack( expand= YES, fill = X)
 
+print "*******  >>>>  sys.executable:  " + sys.executable + "  sys.platform: " + sys.platform
+if sys.platform == 'win32' or sys.platform == 'win64':
+	print "get tkdnd library dir: "
+	os.environ['TKDND_LIBRARY'] = os.path.join(os.path.dirname(sys.executable), 'tkdnd2.7')
+
+print "os.getcwd() : " + os.getcwd()
+##dnd = TkDND(frm_command)
+
+#define  statusbar frame
 frm_statusbar = Frame(frm_large, bg= 'grey')
 frm_statusbar.pack()
 statusbar_tw = Label(frm_statusbar, height=1, bg="pink",  width = large_xsize)
