@@ -1,16 +1,28 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-# -*- coding: cp936 -*-
+####### -*- coding: cp936 -*-
 # for ui start
 
 import os
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')   ###  解决 读log文件时 UnicodeDecodeError: 'ascii' codec can't decode byte 0xe5 in position 97: ordinal not in range(128)报错
 ## 此处如果使用 import Tkinter 会有一些参数 不识别
 from Tkinter import *
 #from xml.dom.minidom import *
 import xml.dom.minidom
 
 
+
+####  error collect #####
+
+# UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xbf in position 21: invalid start byte
+# 这是因为所使用的编码不对所导致的，比如我这里使用的是UTF-8，而实际上应该采用GBK才对。
+## http://blog.csdn.net/chenggong2dm/article/details/31386359
+############# end  #############
+
 #######   import support of tkdnd    ##############
+
 
 
 #获取脚本文件的当前路径
@@ -33,7 +45,7 @@ from vtkdnd import *
 
 ## class logxmlparse(xml.sax.ContentHandler):
 
-file_url = "F:/CreativePrj/python_prj/veffectsys/ext_keywords_config/main_parse.xml"
+xmlconfig_file_url = "F:/CreativePrj/python_prj/veffectsys/ext_keywords_config/main_parse.xml"
 
 class logparse():
 
@@ -82,16 +94,16 @@ self.line_after_keyword, self.related_name, self.description ]
 		return tag_list  ## return a list contain self. xxx .
 
 
-if os.path.exists(file_url):
-	print "file exits url : %s" % file_url
+if os.path.exists(xmlconfig_file_url):
+	print "file exits url : %s" % xmlconfig_file_url
 	try:
 		print "start to parse xml"
-		xml_domtree = xml.dom.minidom.parse(file_url)
+		xml_domtree = xml.dom.minidom.parse(xmlconfig_file_url)
 	except Exception, e:
 		print "xml file is not a goot xml!"
 
 else:
-	print "file is not exits url: %s" % file_url
+	print "file is not exits url: %s" % xmlconfig_file_url
 
 
 xmlnode = xml_domtree.documentElement
@@ -162,9 +174,6 @@ def find_file_by_pattern(pattern='.*', base="bbklog", circle=True):
 
 ####  end search keys ####
 
-search_dir_url = "F:/CreativePrj/python_prj/veffectsys"
-file_list = find_file_by_pattern(".xml", search_dir_url)
-print file_list
 
 rootui = Tk()
 
@@ -293,48 +302,68 @@ cmd_left_lb.pack(side=LEFT)
 #### ###################################################
 
 
-def searchkey(fileurl, mode, logparse, fileout='F:/templog/report.temp.txt', outmode='a+'):
-	filefp = open(file_url, mode)
+def searchkey(fileurl, mode, logparse_list, fileout='F:/templog/report.temp.txt', outmode='a+'):
+	if os.path.exists(fileurl):
+		filefp = open(fileurl, mode)
+	else:
+		pass
+		#print "Search file: " + fileurl + " is not exist!!!!"
+		#return None
 	fileoutfp = open(fileout, outmode)
 
-	print "searching file_url: " + file_url
+	print "searching file_url: " + fileurl
 	try:
 		nline = 0
 		keycnt = 0
 		keylines = []
-		for line in filefp:
+		for line_not_utf8 in filefp:
+			line = line_not_utf8.decode('latin-1').encode("utf-8")  #  UnicodeDecodeError: 'utf8' codec can't decode byte 0xd4 in position 54: invalid continuation byte
 			nline += 1
-			if (not logparse.keyword=="") and  (not logparse.keyword_and == ""):
-				if (not (line.find(logparse.keyword) == -1)) and (not (line.find(logparse.keyword_and) == -1)):
-					keycnt +=1
-					print "sec nline:"
-					print  nline
-					print "sec line:"
-					print line
+			for logk_item in logparse_list:
+				##  print "KEYWORD: %s ; KEYWORDAND: %s" % (logk_item.keyword, logk_item.keyword_and)
+				if (not logk_item.keyword=="") and  (not logk_item.keyword_and == ""):
+					if (not (line.find(logk_item.keyword) == -1)) and (not (line.find(logk_item.keyword_and) == -1)):
+						keycnt +=1
+						print "sec nline:"
+						print  nline
+						print "sec line:"
+						print line
+						appendstrlist = [str(keycnt),str(nline), line]
+						keylines.append(appendstrlist)
+				elif not logk_item.keyword=="":
+					if not (line.find(logk_item.keyword) == -1):
+						keycnt +=1
+						print "nline:"
+						print  nline
+						print "line:"
+						print line
+						appendstrlist = [str(keycnt),str(nline), line]
 
-					keylines.append(file_url+ str(nline) + line)
-			elif not logparse.keyword=="":
-				if not (line.find(logparse.keyword) == -1):
-					keycnt +=1
-					print "nline:"
-					print  nline
-					print "line:"
-					print line
-					keylines.append(file_url+ str(nline) + line)
-			else:
-				print "search nothing!!"
+						#fileoutfp.writelines(str(keycnt) + str(nline) + line)
+						#fileoutfp.flush()
+						keylines.append(appendstrlist)
+				else:
+					print "search nothing!!"
+					#appendstrlist = ["0","None", " Nothing Found!!!!"]
+					#keylines.append(appendstrlist)
 
 		# print out to outfiles.
 		keylinesprint = ""
 		keylcnt = 0
 		for item in keylines:
 			keylcnt +=1
-			keylinesprint += "-[cnt]:  %d,  -[fileurl]:  %s, \n-[lineContent]:\n    %s" % (keylcnt,file_url, item)
-		allprint = "[keyword]: %s ; [keywordand]:%s ; [keycnt]:%d ;\n[keylinesfull]:\n %s\n*****************\n\n\n" % \
-				   (logparse.keyword, logparse.keyword_and, keycnt, keylinesprint)
-		fileoutfp.writelines(allprint)
-		fileoutfp.flush()
-		return logparse.keyword, logparse.keyword_and, keycnt, keylines
+			keylinesprint += "-[cnt]:  %s, linenum: %s \n-[lineContent]:\n%s" % (item[0], item[1], item[2])
+		allprint = "\n[keyword]: %s ; [keywordand]:%s ; \n[keycnt]:%d ; \n[fileurl]:\n%s\n[keylinesfull]:\n -----------------------------------------------------------------\n%s\n**************************  split up and down  *******************************\n\n\n" % \
+				   (logk_item.keyword, logk_item.keyword_and, keycnt, fileurl, keylinesprint)
+
+		print allprint
+		#只有匹配到时，才打印出来
+		if keycnt == 0:
+			print "Don't print "
+		else:
+			fileoutfp.writelines(allprint)
+			fileoutfp.flush()
+		return logk_item.keyword, logk_item.keyword_and, keycnt, keylines
 
 	finally:
 		filefp.close()
@@ -349,7 +378,13 @@ def enter_hander_for_entry(event):
 	allthe_filelist = find_file_by_pattern(".log", str_input.get())
 	result_list = []
 	for item in allthe_filelist:
-		result_list.append(searchkey(item, 'r', xlogparse))
+		#sresult = searchkey(item.decode('latin-1').encode("utf-8") , 'r', xmlnode_logparse_list)
+		sresult = searchkey(item , 'r', xmlnode_logparse_list)
+		if not sresult:
+			print "file not exist! can't open"
+			continue
+		else:
+			result_list.append(sresult)
 
 	for item2 in result_list:
 		print "\n\n----------- start ************"
