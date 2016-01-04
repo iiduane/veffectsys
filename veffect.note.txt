@@ -14,3 +14,6 @@ git push origin master    # 执行后提示输入用户名密码
 git remote add origin master https://github.com/zhong635725959/droplook.git
 
 
+veffectsys  github远程仓库：
+   https://github.com/iiduane/veffectsys
+

@@ -168,7 +168,7 @@ print file_list
 
 rootui = Tk()
 
-li =['c', 'python', 'php', 'html' , 'sql']
+li =['c for title']
 
 movie =['css', 'pyman', 'phper']
 
@@ -254,7 +254,7 @@ listb.pack(side=LEFT, expand = NO, fill = Y)
 
 # frm_right_text = Frame(frm_mright)
 # frm_right_text.pack(side= TOP)
-showtexts = ['one text show', 'two text show', 'three text show', 'four text show']
+showtexts = ['Search keys:']
 for showtext in showtexts:
 	showtw = Text(frm_mright, height=10,  width = mright_xsize)
 	showtw.insert(1.0, showtext)
@@ -272,11 +272,98 @@ frm_command.pack()  ##  如果要独占一行 就不要使用 side expand fill �
 cmd_left_lb = Label(frm_command,text ='Command')
 cmd_left_lb.pack(side=LEFT)
 
+################################################################
+#### # Python的标准库linecache模块非常适合这个任务
+#### import linecache
+#### the_line = linecache.getline('d:/FreakOut.cpp', 222)
+#### print (the_line)
+#### # linecache读取并缓存文件中所有的文本，
+#### # 若文件很大，而只读一行，则效率低下。
+#### # 可显示使用循环, 注意enumerate从0开始计数，而line_number从1开始
+#### def getline(the_file_path, line_number):
+####   if line_number < 1:
+####     return ''
+####   for cur_line_number, line in enumerate(open(the_file_path, 'rU')):
+####     if cur_line_number == line_number-1:
+####       return line
+####   return ''
+#### the_line = linecache.getline('d:/FreakOut.cpp', 222)
+#### print (the_line)
+
+#### ###################################################
+
+
+def searchkey(fileurl, mode, logparse, fileout='F:/report.temp.txt', outmode='a+'):
+	filefp = open(file_url, mode)
+	fileoutfp = open(fileout, outmode)
+
+	print "searching file_url: " + file_url
+	try:
+		nline = 0
+		keycnt = 0
+		keylines = []
+		for line in filefp:
+			nline += 1
+			if (not logparse.keyword=="") and  (not logparse.keyword_and == ""):
+				if (not (line.find(logparse.keyword) == -1)) and (not (line.find(logparse.keyword_and) == -1)):
+					keycnt +=1
+					print "sec nline:"
+					print  nline
+					print "sec line:"
+					print line
+
+					keylines.append(file_url+ str(nline) + line)
+			elif not logparse.keyword=="":
+				if not (line.find(logparse.keyword) == -1):
+					keycnt +=1
+					print "nline:"
+					print  nline
+					print "line:"
+					print line
+					keylines.append(file_url+ str(nline) + line)
+			else:
+				print "search nothing!!"
+
+		# print out to outfiles.
+		keylinesprint = ""
+		keylcnt = 0
+		for item in keylines:
+			keylcnt +=1
+			keylinesprint += "cnt:%d,\n fileurl:%s, \n  lineContent:%s\n\n\n\n" % (keylcnt,file_url, item)
+		allprint = "keyword: %s, keywordand:%s, keycnt:%d, \nkeylinesfull: %s" % (logparse.keyword, logparse.keyword_and, keycnt, keylinesprint)
+		fileoutfp.writelines(allprint)
+		fileoutfp.flush()
+		return logparse.keyword, logparse.keyword_and, keycnt, keylines
+
+	finally:
+		filefp.close()
+		fileoutfp.close()
+
 def enter_hander_for_entry(event):
 	print "bind hander str: " +  str_input.get()
 	## str_input = command_lb.get()
 	str_input.set(command_lb.get())
 	print "bind hander after set : " +  str_input.get()
+	result_list = []
+	for item in file_list:
+		result_list.append(searchkey(item, 'r', xlogparse))
+
+	for item2 in result_list:
+		print "\n\n----------- start ************"
+		print item2[0]
+		print type(item2[0])
+		print item2[1]
+		print type(item2[1])
+		print item2[2]
+		print type(item2[2])
+		## print logparse.keyword, logparse.keyword_and, keycnt
+		showinbox = "%s + %s  (%d)" % (str(item2[0]), item2[1], item2[2])  ####  多个变量一起打印，不加括号，会报错
+		showtw.insert(END, showinbox)
+		showtw.update()
+		print "--------------------- end ************"
+
+	#rootui.update()
+	rootui.update_idletasks()
 
 str_input = StringVar()
 input_dnd = TkDND(frm_command)
@@ -339,6 +426,9 @@ statusbar_tw.pack(expand = YES, fill = X)
 frm_large.pack()
 
 print "ui print start."
+
+# 保持窗口实时更新
+# root.update_idletasks()
 
 rootui.mainloop()
 
