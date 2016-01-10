@@ -45,12 +45,18 @@ from vtkdnd import *
 
 ## class logxmlparse(xml.sax.ContentHandler):
 
-xmlconfig_file_url = "F:/CreativePrj/python_prj/veffectsys/ext_keywords_config/main_parse.xml"
+## xmlconfig_file_url = "F:/CreativePrj/python_prj/veffectsys/ext_keywords_config/main_parse.xml"
+xmlconfig_file_url = os.path.join(curr_path, 'ext_keywords_config/main_parse.xml')
+print "[xmlconfig_file_url]: " + xmlconfig_file_url
+report_file_url = os.path.join(curr_path, 'report/report.log')
+input_log_path = ""
 
 class logparse():
 
 	def __init__(self):
 		logparse_name = ""
+		logparse_savefile_url = "report.temp.log"
+		file_type =".log"
 		keyword = ""
 		keyword_and = ""
 		type = ""
@@ -65,6 +71,8 @@ class logparse():
 		description = " This is init in class logparse!!"
 		print "init completed."
 	logparse_name = ""
+	logparse_savefile_url = ""
+	file_type = ""
 	keyword = ""
 	keyword_and = ""
 	type = ""
@@ -80,7 +88,7 @@ class logparse():
 
 	def print_all(self):
 		print "\n**** logparse print all ****"
-		print "logparse_name = %s; keyword = %s;  keyword_and=%s; type = %s;"  % (self.logparse_name, self.keyword, self.keyword_and, self.type)
+		print "logparse_name = %s; file_type: %s, keyword = %s;  keyword_and=%s; type = %s;"  % (self.logparse_name, self.file_type, self.keyword, self.keyword_and, self.type)
 		print "priority = [%s]  wholeword = [%s]  casesense = [%s]" % (self.priority, self.wholeword, self.casesense)
 		print "line_before = [%s]  line_before_keyword = [%s]  line_after = [%s]" % (self.line_before, self.line_before_keyword, self.line_after)
 		print "line_after_keyword = [%s] related_name = [%s]  description = [%s] " % (self.line_after_keyword, self.related_name, self.description)
@@ -121,7 +129,12 @@ for subnode in subnodes:
 	xlogparse = logparse()
 	if subnode.hasAttribute("name"):
 		xlogparse.logparse_name = subnode.getAttribute("name")
+	if subnode.hasAttribute("savefile_url"):
+		xlogparse.logparse_savefile_url = subnode.getAttribute("savefile_url")
+	xlogparse.file_type = subnode.getElementsByTagName('file_type')[0].childNodes[0].data
 	xlogparse.keyword = subnode.getElementsByTagName('keyword')[0].childNodes[0].data
+	logparse.keyword_and = subnode.getElementsByTagName('keyword_and')[0].childNodes[0].data
+	#xlogparse.keyword_and = subnode.getElementsByTagName('keyword_and')[0].childNodes[0].data
 	xlogparse.type = subnode.getElementsByTagName('type')[0].childNodes[0].data
 	xlogparse.priority = subnode.getElementsByTagName('priority')[0].childNodes[0].data
 	xlogparse.wholeword = subnode.getElementsByTagName('wholeword')[0].childNodes[0].data
@@ -373,13 +386,18 @@ def enter_hander_for_entry(event):
 	print "bind hander str: " +  str_input.get()
 	## str_input = command_lb.get()
 	str_input.set(command_lb.get())
+	input_log_path = str_input.get()
+	if xlogparse.logparse_savefile_url == "":
+		xlogparse.logparse_savefile_url = "default.report.log"
+
+	input_log_path = os.path.join(input_log_path, xlogparse.logparse_savefile_url)
 	print "bind hander after set : " +  str_input.get()
 	# 从输入框获取 目录路径
-	allthe_filelist = find_file_by_pattern(".log", str_input.get())
+	allthe_filelist = find_file_by_pattern(".*", str_input.get())
 	result_list = []
 	for item in allthe_filelist:
 		#sresult = searchkey(item.decode('latin-1').encode("utf-8") , 'r', xmlnode_logparse_list)
-		sresult = searchkey(item , 'r', xmlnode_logparse_list)
+		sresult = searchkey(item , 'r', xmlnode_logparse_list, input_log_path)
 		if not sresult:
 			print "file not exist! can't open"
 			continue
@@ -397,11 +415,12 @@ def enter_hander_for_entry(event):
 		## print logparse.keyword, logparse.keyword_and, keycnt
 		showinbox = "%s + %s  (%d)" % (str(item2[0]), item2[1], item2[2])  ####  多个变量一起打印，不加括号，会报错
 		showtw.insert(END, showinbox)
-		showtw.update()
+		##showtw.update()
+		##showtw.update_idletasks()
 		print "--------------------- end ************"
 
 	#rootui.update()
-	rootui.update_idletasks()
+	##rootui.update_idletasks()
 
 str_input = StringVar()
 input_dnd = TkDND(frm_command)
@@ -466,8 +485,8 @@ frm_large.pack()
 print "ui print start."
 
 # 保持窗口实时更新
-# root.update_idletasks()
 
+## rootui.update_idletasks()
 rootui.mainloop()
 
 print "ui print end."

@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# -*- coding: cp936 -*-
+
 import os
 import Tkinter
 

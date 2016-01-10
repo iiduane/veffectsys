@@ -2,9 +2,10 @@
 
 <configure_parse title="log_keyword">
 
-<logparse_set name="pc1" >
+<logparse_set name="pc1" savefile="enable" savein_logurl="disable" savefile_url="temp.report.log" >
+<file_type>.log</file_type>
 <keyword>PC is at</keyword>
-<keyword_and></keyword_and>
+<keyword_and>None</keyword_and>
 <type>kernel_panic</type>
 <priority enable="true">1</priority>
 <wholeword>true</wholeword>
@@ -19,8 +20,9 @@
 
 
 <logparse_set name="modemrst1" >
-<keyword>SMSM_RESET</keyword>
-<keyword_and></keyword_and>
+<file_type>.log</file_type>
+<keyword>chg_present</keyword>
+<keyword_and>SMSM_RESET</keyword_and>
 <type>modem_reset</type>
 <priority enable="true">1</priority>
 <wholeword>true</wholeword>
@@ -32,6 +34,25 @@
 <!-- related_name :  pc2   -->
 <related_name enable="false"> </related_name>
 <description>Location the "SMSM_RESET", and find modem reset! </description>
+</logparse_set>
+
+
+
+<logparse_set name="modemrst1" >
+<file_type>.xml</file_type>
+<keyword>Logsystem_crashed</keyword>
+<keyword_and>None</keyword_and>
+<type>Logsystem_crashed</type>
+<priority enable="true">1</priority>
+<wholeword>true</wholeword>
+<casesense>true</casesense>
+<line_before enable="true">2</line_before>
+<line_before_keyword enable="false"> </line_before_keyword>
+<line_after enable="true">6</line_after>
+<line_after_keyword enable="false"> </line_after_keyword>
+<!-- related_name :  pc2   -->
+<related_name enable="false"> </related_name>
+<description>  "Logsystem_crashed" ! </description>
 </logparse_set>
 
 
