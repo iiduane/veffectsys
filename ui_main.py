@@ -133,7 +133,7 @@ for subnode in subnodes:
 		xlogparse.logparse_savefile_url = subnode.getAttribute("savefile_url")
 	xlogparse.file_type = subnode.getElementsByTagName('file_type')[0].childNodes[0].data
 	xlogparse.keyword = subnode.getElementsByTagName('keyword')[0].childNodes[0].data
-	logparse.keyword_and = subnode.getElementsByTagName('keyword_and')[0].childNodes[0].data
+	xlogparse.keyword_and = subnode.getElementsByTagName('keyword_and')[0].childNodes[0].data
 	#xlogparse.keyword_and = subnode.getElementsByTagName('keyword_and')[0].childNodes[0].data
 	xlogparse.type = subnode.getElementsByTagName('type')[0].childNodes[0].data
 	xlogparse.priority = subnode.getElementsByTagName('priority')[0].childNodes[0].data
@@ -320,8 +320,9 @@ def searchkey(fileurl, mode, logparse_list, fileout='F:/templog/report.temp.txt'
 		filefp = open(fileurl, mode)
 	else:
 		pass
-		#print "Search file: " + fileurl + " is not exist!!!!"
+		print "Search file: " + fileurl + " is not exist!!!!"
 		#return None
+
 	fileoutfp = open(fileout, outmode)
 
 	print "searching file_url: " + fileurl
@@ -329,54 +330,112 @@ def searchkey(fileurl, mode, logparse_list, fileout='F:/templog/report.temp.txt'
 		nline = 0
 		keycnt = 0
 		keylines = []
+		only_keyword_list = []
+		all_keylines_list = []
+
+		icnt = 0
+		for item in logparse_list:
+			one_keylines_list = [str(icnt), item.keyword, item.keyword_and, only_keyword_list]
+			all_keylines_list.append(one_keylines_list)
+			icnt += 0
+
+		print "all_keylines_list: %d" % all_keylines_list.__len__()
+
+
 		for line_not_utf8 in filefp:
 			line = line_not_utf8.decode('latin-1').encode("utf-8")  #  UnicodeDecodeError: 'utf8' codec can't decode byte 0xd4 in position 54: invalid continuation byte
 			nline += 1
+			jcnt = 0
 			for logk_item in logparse_list:
-				##  print "KEYWORD: %s ; KEYWORDAND: %s" % (logk_item.keyword, logk_item.keyword_and)
+				print "KEYWORD: %s ; KEYWORDAND: %s; nline:%d" % (logk_item.keyword, logk_item.keyword_and, nline)
 				if (not logk_item.keyword=="") and  (not logk_item.keyword_and == ""):
+					print "[keyword match 2]"
 					if (not (line.find(logk_item.keyword) == -1)) and (not (line.find(logk_item.keyword_and) == -1)):
 						keycnt +=1
 						print "sec nline:"
 						print  nline
 						print "sec line:"
 						print line
+
+						line += "\n\n"
+
 						appendstrlist = [str(keycnt),str(nline), line]
-						keylines.append(appendstrlist)
+						#keylines.append(appendstrlist)
+						all_keylines_list[jcnt][3].append(appendstrlist)
+						print "matche2: add-all_keylines_list: jcnt :%d" % jcnt
+
+
+					else:
+						print "Not match 2 keywords"
 				elif not logk_item.keyword=="":
+					print "[keyword match 1]"
 					if not (line.find(logk_item.keyword) == -1):
 						keycnt +=1
 						print "nline:"
 						print  nline
 						print "line:"
 						print line
+						line += "\n\n"
 						appendstrlist = [str(keycnt),str(nline), line]
 
 						#fileoutfp.writelines(str(keycnt) + str(nline) + line)
 						#fileoutfp.flush()
-						keylines.append(appendstrlist)
+						#keylines.append(appendstrlist)
+						all_keylines_list[jcnt][3].append(appendstrlist)
+						print "matche1: add-all_keylines_list: jcnt :%d" % jcnt
+					else:
+						print "Not match 1 keywords"
 				else:
+					print "[keyword match 0]"
 					print "search nothing!!"
 					#appendstrlist = ["0","None", " Nothing Found!!!!"]
 					#keylines.append(appendstrlist)
 
+
+				jcnt +=1
+			## end for .
+
 		# print out to outfiles.
 		keylinesprint = ""
 		keylcnt = 0
-		for item in keylines:
-			keylcnt +=1
-			keylinesprint += "-[cnt]:  %s, linenum: %s \n-[lineContent]:\n%s" % (item[0], item[1], item[2])
-		allprint = "\n[keyword]: %s ; [keywordand]:%s ; \n[keycnt]:%d ; \n[fileurl]:\n%s\n[keylinesfull]:\n -----------------------------------------------------------------\n%s\n**************************  split up and down  *******************************\n\n\n" % \
-				   (logk_item.keyword, logk_item.keyword_and, keycnt, fileurl, keylinesprint)
+		print "keylines is : %d" % keylines.__len__()
 
-		print allprint
+		if keylines.__len__():
+			print "for item in keylines------"
+			for item in keylines:
+				keylcnt +=1
+				keylinesprint += "  --[cnt]:  %s, linenum: %s \n  --[lineContent]:  %s" % (item[0], item[1], item[2])
+			allprint = "\n[keyword]: %s ; [keyword_and is]:%s ; \n[keycnt]:%d ; \n[fileurl]:\n%s\n[keylinesfull]:\n -----------------------------------------------------------------\n%s\n**************************  split up and down  *******************************\n\n\n" % \
+					   (logk_item.keyword, logk_item.keyword_and, keycnt, fileurl, keylinesprint)
+			##fileoutfp.writelines(allprint)
+			##fileoutfp.flush()
+		else:
+			print "keylines is %d ; " % keylines.__len__()
+			##fileoutfp.writelines("Not thing match the xml config!!!!!!")
+			##fileoutfp.flush()
+
+		## print allprint
 		#只有匹配到时，才打印出来
 		if keycnt == 0:
 			print "Don't print "
 		else:
-			fileoutfp.writelines(allprint)
+			pass
+
+		###### print #########
+
+		one_item_str = ""
+		print "*****  print the result start  ********"
+		for item in range(logparse_list.__len__()):
+			print "*****  ----- print the result ------- ********"
+			print all_keylines_list[item]
+			one_item_str = " %s \n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" % all_keylines_list[item]
+			fileoutfp.writelines(one_item_str)
 			fileoutfp.flush()
-		return logk_item.keyword, logk_item.keyword_and, keycnt, keylines
+		print "*****  print the result end  ********"
+		##### print end ###########
+
+
+		return all_keylines_list
 
 	finally:
 		filefp.close()
@@ -393,7 +452,7 @@ def enter_hander_for_entry(event):
 	input_log_path = os.path.join(input_log_path, xlogparse.logparse_savefile_url)
 	print "bind hander after set : " +  str_input.get()
 	# 从输入框获取 目录路径
-	allthe_filelist = find_file_by_pattern(".*", str_input.get())
+	allthe_filelist = find_file_by_pattern(".xml", str_input.get())
 	result_list = []
 	for item in allthe_filelist:
 		#sresult = searchkey(item.decode('latin-1').encode("utf-8") , 'r', xmlnode_logparse_list)
@@ -404,6 +463,8 @@ def enter_hander_for_entry(event):
 		else:
 			result_list.append(sresult)
 
+	print "result list len : %d " % result_list.__len__()
+
 	for item2 in result_list:
 		print "\n\n----------- start ************"
 		print item2[0]
@@ -412,8 +473,10 @@ def enter_hander_for_entry(event):
 		print type(item2[1])
 		print item2[2]
 		print type(item2[2])
+
 		## print logparse.keyword, logparse.keyword_and, keycnt
-		showinbox = "%s + %s  (%d)" % (str(item2[0]), item2[1], item2[2])  ####  多个变量一起打印，不加括号，会报错
+		showinbox = "%s + %s  (%s)" % (str(item2[0]), item2[1], item2[2])  ####  多个变量一起打印，不加括号，会报错
+		print "showinbox : " + showinbox
 		showtw.insert(END, showinbox)
 		##showtw.update()
 		##showtw.update_idletasks()
